@@ -8,23 +8,22 @@ with open("schema_info.json", "r") as file:
     SCHEMA_INFO = json.load(file)
 
 prompt = f'''
-    Based on the following schema information, generate a context for the LLM, to generate better queries.
+    Based on the following schema information, generate a brief information about Tables.
     {SCHEMA_INFO}
+    Generated information should be useful for the user to understand the database.
 '''
 
-stream = client.chat(model='llama3.2', messages=[
+stream = client.chat(model='deepseek-r1:1.5b', messages=[
     {
     'role': 'user',
     'content':  prompt,
         },
     ],
     options={
-        "temperature": 0.4,
-        "top_p": 0.95,
-        "max_tokens": 200,
-        "stop": ["\n\n", "###"]
+        "temperature": 1,
     },
     stream = True,
 )
 
-print(SCHEMA_INFO)
+for chunks in stream:
+    print(chunks['message']['content'], end="")
